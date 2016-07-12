@@ -1,0 +1,80 @@
+---
+  - name: Pull in the application
+    git: repo="{{ git_repo }}" accept_hostkey=yes key_file="/home/{{ base_user }}/githubkey" force="{{ git_force }}" version={{ git_branch }} dest="/var/www/{{app_name}}"
+
+  - name: Create the vendor directory
+    file: path=/var/www/{{app_name}}/vendor state=directory mode=0777
+    sudo: yes
+
+  - name: Create the storage and logs directories
+    file: path=/var/www/{{app_name}}/storage state=directory mode=0777
+    sudo: yes
+
+  - name: Create the storage subdirectories
+    file: path=/var/www/{{app_name}}/storage/{{ item }} state=directory mode=0777
+    sudo: yes
+    with_items:
+      - logs
+      - app
+      - framework
+      - framework/cache
+      - framework/sessions
+      - framework/views
+
+  - name: Make the vendor subdirectories writeable
+    file:
+      path: /var/www/{{app_name}}/vendor
+      state: directory
+      mode: u=rwX,g=rwX,o=rwX
+      recurse: yes
+
+  - name: Make the storage directory writeable
+    file:
+      path: /var/www/{{app_name}}/storage
+      state: directory
+      mode: u=rwX,g=rwX,o=rwX
+      recurse: yes
+
+  - name: install JSON.minify
+    git: repo="https://github.com/DemocracyApps/JSON.minify.git" dest="/var/www/{{app_name}}/vendor/JSON.minify"
+    sudo: yes
+    sudo_user: "{{web_user}}"
+
+  - name: run composer install
+    composer: command=install no_dev=no working_dir=/var/www/{{app_name}}
+
+  - name: Create the .env file
+    template:
+      src=dot_env
+      dest=/var/www/{{app_name}}/.env
+
+  - name: Change ownership to the web sudo_user
+    file: 
+      path: /var/www/{{app_name}}
+      owner: "{{ web_user }}"
+      group: "{{ web_user }}"
+      recurse: yes
+
+  - name: Make public directories owner/group writeable
+    file:
+      path: /var/www/{{app_name}}/public
+      state: directory
+      mode: u=rwX,g=rwX,o=rX
+      recurse: yes
+
+  - name: Run the migration
+    command: php artisan migrate
+    sudo: yes
+    sudo_user: "{{web_user}}"
+    args:
+      chdir: /var/www/{{ app_name }}
+
+  - name: Add base_user to www-data group
+    user:
+      append: yes
+      groups: "www-data"
+      name: "{{ base_user }}"
+
+  - name: Add cron job to run artisan
+    cron: name="Artisan scheduler" user="{{base_user}}" minute="*" job="/usr/bin/php /var/www/{{app_name}}/artisan schedule:run >> /dev/null 2>&1"
+

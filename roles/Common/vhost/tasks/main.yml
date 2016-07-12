@@ -1,0 +1,17 @@
+  - name: disable the default apache site
+    shell: a2dissite 000-default
+    args:
+      removes: /etc/apache2/sites-enabled/000-default.conf
+
+  - name: Copy across new virtual host
+    template:
+      src=app.conf.j2
+      dest=/etc/apache2/sites-available/{{app_name}}.conf
+
+  - name: enable the application apache site
+    shell: a2ensite {{app_name}}
+    args:
+      creates: /etc/apache2/sites-enabled/{{app_name}}.conf
+
+  - name: reload apache
+    service: name=apache2 state=reloaded

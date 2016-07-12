@@ -1,0 +1,23 @@
+---
+  # Drop the database if recreate=true
+  - postgresql_db:
+      name={{ db_name }}
+      login_host={{ db_server }}
+      login_user={{ db_master_user }}
+      login_password={{ db_master_password }}
+      state=absent
+    when: db_recreate == true
+
+  - postgresql_db: name={{ db_name }} login_host={{ db_server }} login_user={{ db_master_user }} login_password={{ db_master_password }}
+    when: db_template is undefined
+    register: db_nt_changed
+
+  - postgresql_db: name={{ db_name }} template={{ db_template }} login_host={{ db_server }} login_user={{ db_master_user }} login_password={{ db_master_password }}
+    when: db_template is defined
+    register: db_t_changed
+
+  - set_fact: db_was_created={{ db_t_changed.changed or db_nt_changed.changed }}
+
+  - name: Show whether db_was_created is true
+    debug: var=db_was_created
+

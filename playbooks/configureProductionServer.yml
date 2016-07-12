@@ -1,0 +1,58 @@
+---
+- hosts: all
+  sudo: true
+
+  vars_files:
+    - ../common_vars.yml
+    - ../aws_vars.yml
+
+  vars:
+    base_user:          "ubuntu" # ubuntu or vagrant
+    fqdn:               "ec2-54-209-31-29.compute-1.amazonaws.com"
+    mode:               "production"
+    db_server:          "{{rds_db_server}}"
+    ttp_db_name:        "traxx"
+    moodle_db_name:     "traxx_moodle"
+    ttp_db_user:        "traxx_admin"
+    ttp_db_password:    "traxx_password"
+    app_name:           "traxx"
+    git_repo:           "git@github.com:the-training-partners/ttp-platform.git"
+    git_branch:         "master"
+    db_master_user:     ttp_user
+    db_master_password: default_ttp_password
+    app_document_base:  "{{ apache_document_base }}/{{ app_name }}/public"
+    swap_size:          "1G"
+    git_key:            "/Users/ericjackson/Dev/TheTrainingPartners/Keys/githubkey.pvt"
+
+  roles:
+    - Common/common
+    - Common/swap
+    - Common/webserver   # Install & configure Apache & PHP
+    - Common/create_git_key
+    - Common/common_ttp
+    - Common/simple_mail # Mostly for simple alerting, not mass mailing
+    - Common/database
+    - Common/vhost
+    - { role: Common/dev_db_setup, db_name: "{{ttp_db_name}}", db_user: "{{ttp_db_user}}", db_password: "{{ttp_db_password}}",
+              when: "mode == 'development'"}
+    - { role: Common/create_db, db_recreate: false, db_name: "{{ ttp_db_name }}", when: "mode != 'development'"}
+    - { role: Common/create_db_user, db_user: "{{ ttp_db_user }}", db_name: "{{ ttp_db_name }}",
+        db_password: "{{ ttp_db_password }}", create_user: true, power_user: true,
+        when: "mode != 'development' and db_was_created is defined and db_was_created"
+        ## Use of db_was_created (set in create_db) is a work-around - postgresql_user fails if the user exists
+      }
+      # New Stuff
+    - { role: Common/create_db, db_recreate: false, db_name: "{{ moodle_db_name }}", when "mode != 'development'"}
+    - { role: Common/create_db_user, db_user: "{{ ttp_db_user }}", db_name: "{{ moodle_db_name }}",
+        db_password: "{{ ttp_db_password }}", create_user: false,
+        when: "mode != 'development' and db_was_created is defined and db_was_created"
+        ## Use of db_was_created (set in create_db) is a work-around - postgresql_user fails if the user exists
+      }
+    - { role: Traxx, git_force: "no", db_name: "{{ ttp_db_name}}", 
+        db_user: "{{ ttp_db_user}}", db_password: "{{ ttp_db_password}}" }
+    - Common/queueing
+    - Common/remove_git_key
+
+
+
+

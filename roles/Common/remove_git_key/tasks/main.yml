@@ -1,0 +1,2 @@
+  - name: Remove the Github key
+    file: path="/home/{{ base_user }}/githubkey" state="absent"

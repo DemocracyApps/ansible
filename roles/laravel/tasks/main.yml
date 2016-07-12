@@ -1,0 +1,50 @@
+---
+  - name: install composer
+    shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    args:
+      creates: /usr/local/bin/composer
+
+
+  - name: Create the vendor directory
+    file: path=/var/www/{{app_name}}/{{app_name}}/vendor state=directory mode=0777
+    sudo: yes
+
+  - name: Create the storage and logs directories
+    file: path=/var/www/{{app_name}}/{{app_name}}/storage state=directory mode=0777
+    sudo: yes
+
+  - name: Create the storage subdirectories
+    file: path=/var/www/{{app_name}}/{{app_name}}/storage/{{ item }} state=directory mode=0777
+    sudo: yes
+    with_items:
+      - logs
+      - app
+      - framework
+      - framework/cache
+      - framework/sessions
+      - framework/views
+
+  - name: Make the vendor subdirectories writeable
+    file:
+      path: /var/www/{{app_name}}/{{app_name}}/vendor
+      state: directory
+      mode: u=rwX,g=rwX,o=rwX
+      recurse: yes
+
+  - name: Make the storage directory writeable
+    file:
+      path: /var/www/{{app_name}}/{{app_name}}/storage
+      state: directory
+      mode: u=rwX,g=rwX,o=rwX
+      recurse: yes
+
+  - name: run composer install
+    composer: command=install no_dev=no working_dir=/var/www/{{app_name}}/{{app_name}}
+    sudo: yes
+    sudo_user: "{{fs_user}}"
+
+  - name: copy .env.example to .env
+    copy:
+      src=../{{app_name}}/.env.example dest=/var/www/{{app_name}}/{{app_name}}/.env
+
+

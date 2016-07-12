@@ -1,0 +1,26 @@
+---
+
+  - name: install beanstalkd and supervisor
+    apt: name={{ item }} state=present
+    with_items:
+      - beanstalkd
+      - supervisor
+
+  - name: make sure beanstalkd is started
+    service: name=beanstalkd enabled=yes state=started
+
+  - name: copy over supervisord.conf file
+    copy:
+      src=supervisord.conf dest=/etc/init
+
+  - name: create the queue.conf file in /etc/supervisor/conf.d
+    template:
+      src=queue.conf.j2
+      dest=/etc/supervisor/conf.d/queue_{{app_name}}.conf
+
+  - name: make sure supervisor is started
+    service: name=supervisor enabled=yes state=started
+
+  - name: Have supervisorctl start the queue program
+    supervisorctl: name=queue_{{app_name}} state=present config=/etc/supervisor/supervisord.conf
+

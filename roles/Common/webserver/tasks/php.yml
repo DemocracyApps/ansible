@@ -1,0 +1,39 @@
+---
+
+  - name: install PHP
+    apt: name={{ item }} state=present
+    with_items:
+      - php5
+      - php5-curl
+      - php5-common
+      - php5-gd
+      - php5-mcrypt
+      - php5-readline
+      - php5-xdebug
+      - php5-pgsql
+      - php5-dev
+
+  - name: enable php5-mcrypt
+    shell: php5enmod mcrypt
+    args:
+      creates: /etc/php5/cli/conf.d/20-mcrypt.ini
+
+  - name: copy over xdebug.ini file
+    copy:
+      src=xdebug.ini dest=/etc/php5/mods-available/xdebug.ini
+
+  - name: configure error reporting in /etc/php5/apache2/php.ini
+    lineinfile: dest=/etc/php5/apache2/php.ini regexp='error_reporting = .*' line='error_reporting = E_ALL'
+  - name: configure display_errors in /etc/php5/apache2/php.ini
+    lineinfile: dest=/etc/php5/apache2/php.ini regexp='display_errors = .*' line='display_errors = On'
+  - name: configure functions disabled in /etc/php5/apache2/php.ini
+    lineinfile: dest=/etc/php5/apache2/php.ini regexp='disable_functions = .*' line='disable_functions ='
+
+  - name: reload apache
+    service: name=apache2 state=reloaded
+
+  - name: install composer
+    shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    args:
+      creates: /usr/local/bin/composer
+

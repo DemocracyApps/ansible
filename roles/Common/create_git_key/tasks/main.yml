@@ -1,0 +1,9 @@
+  - name: Copy the Github key over
+    copy: src={{ git_key }} dest="/home/{{ base_user }}/githubkey" owner="{{base_user}}" mode=0600
+
+  - name: Set key to proper mode
+    file:
+      mode: u=rw
+      path: "/home/{{ base_user }}/githubkey"
+
+

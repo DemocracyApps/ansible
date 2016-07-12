@@ -1,0 +1,29 @@
+---
+- name: Create a reference or production Moodle instance on Amazon EC2
+  hosts: localhost
+  connection: local
+
+  vars_files:
+    - ../common_vars.yml
+    - ../aws_vars.yml
+
+  vars:
+    # Check/change these for every instance created. Instance name MUST be unique.
+    instance_name:      "traxx_151129_1"
+    instance_type:      "t2.small"
+    debug:              false
+    # The following should rarely change
+    role:               "production" # 'reference' OR 'production'
+    volume_size:        50 # Size of the data volume (only for reference instance)
+    backup_volumes:     [ "/dev/sdb" ] # Volumes to tag for backup (only actually relevant for production)
+    instance_tags:      { Name: "{{ instance_name }}", type: traxx, role: "{{role}}" }
+    key_pair:           "{{web_key_pair}}"
+    iam_role:           "{{web_iam_role}}"
+    security_group:     "{{web_security_group}}"
+
+  roles:
+    - { role: AWS/create_ec2_2vol, ami: "{{base_ami}}"}
+
+  post_tasks:
+    - debug: msg="EC2 Created, public IP = {{ ec2_public_ip }}, FQDN = {{ ec2_dns_name }}"
+

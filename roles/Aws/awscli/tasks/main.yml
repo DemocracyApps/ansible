@@ -1,0 +1,13 @@
+---
+
+  - name: Install AWS CLI
+    pip: name=awscli state=present
+#    apt: name=awscli state=present
+
+  - name: Create ~/.aws
+    file: path=/home/ubuntu/.aws state=directory mode=0755
+
+  - name: Copy the AWS config file to /home/ubuntu/.aws/config
+    copy:
+      src=aws_config dest=/home/ubuntu/.aws/config
+

@@ -1,0 +1,8 @@
+---
+  - postgresql_user: name={{ db_user }} password={{db_password}} role_attr_flags=CREATEDB,CREATEROLE,CREATEUSER
+    sudo: yes
+    sudo_user: postgres
+
+  - postgresql_db: name={{ db_name }} login_host={{ db_server }} login_user={{ db_user }} login_password={{ db_password }}
+    sudo: yes
+    sudo_user: postgres

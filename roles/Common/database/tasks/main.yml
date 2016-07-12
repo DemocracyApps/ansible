@@ -1,0 +1,20 @@
+---
+  - name: install postgresql for client
+    apt: name={{ item }} state=present
+    with_items:
+      - postgresql-client-9.4
+      - pgadmin3
+
+  - name: See what db_server is.
+    debug: var=db_server
+
+  - name: See what db_server is.
+    debug: var=mode
+
+  - name: install postgresql server components if in development mode
+    apt: name={{ item }} state=present #upgrade=yes
+    with_items:
+      - postgresql-9.4
+      - postgresql-contrib-9.4
+    when: mode == "development" or db_server == "localhost"
+

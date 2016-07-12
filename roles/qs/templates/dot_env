@@ -1,0 +1,32 @@
+APP_ENV=local
+APP_DEBUG=true
+APP_KEY=XGehrpfyOWw9ArGL4jSQtUdhOzlCyLdX
+
+DB_HOST={{ db_server }}
+DB_DATABASE={{ db_name }}
+DB_USERNAME={{ db_user }}
+DB_PASSWORD={{ db_password }}
+ 
+DB_MOODLE={{ moodle_db_name }}
+
+STRIPE_API_KEY=sk_test_H6BFzJrnrXSqj0QnZ2PhVG1V
+CACHE_DRIVER=file
+SESSION_DRIVER=database
+
+EMAIL_DISPLAY_ADDRESS=Support@TheTrainingPartners.com
+EMAIL_DISPLAY_NAME='Training Partners Support '
+EMAIL_USER_NAME='support@thetrainingpartners.com'
+EMAIL_PASSWORD=xxxxxxxxx
+
+FACEBOOK_CLIENT_ID=xxxxxxxxxxxxxxxxxx
+FACEBOOK_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+FACEBOOK_REDIRECT=http://ttp.dev/auth/loginfb
+
+S3_KEY=AKIAJL5ZQVMIQ6DDPW6A
+S3_SECRET='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'
+S3_BUCKET=ttp.market.images1
+
+SES_KEY=AKIAJL5ZQVMIQ6DDPW6A
+SES_SECRET='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'
+SES_REGION=us-east-1
+

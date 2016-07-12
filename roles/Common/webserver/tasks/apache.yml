@@ -1,0 +1,17 @@
+---
+
+  - name: install apache
+    apt: name={{ item }} state=present
+    with_items:
+      - apache2
+      - libapache2-mod-php5
+
+  - name: enable apache mod-rewrite
+    shell: a2enmod rewrite
+    args:
+      creates: /etc/apache2/mods-enabled/rewrite.load
+
+  - name: reload apache
+    service: name=apache2 state=reloaded
+
+

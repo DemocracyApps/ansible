@@ -1,0 +1,17 @@
+---
+#
+#  - name: Copy backup script to /usr/local/bin
+#    copy:
+#      src=ebs_backup.php dest=/usr/local/bin/ebs_backup.php
+
+  - name: Create the TTP bin directory
+    file: state=directory owner=ubuntu group=ubuntu mode=0755 path=/usr/local/bin/ttp
+
+  - name: Install the backup script
+    template:
+      src=backup_ebs.php
+      dest=/usr/local/bin/ttp/backup_ebs.php
+
+  - name: Make backup script executable
+    file: path=/usr/local/bin/ttp/backup_ebs.php mode=0755
+    sudo: yes

@@ -1,0 +1,61 @@
+---
+  ## NOTE: This will fail if user already exists!!
+  ## (see https://github.com/ansible/ansible-modules-core/issues/297 and
+  ## https://github.com/ansible/ansible/issues/8547)
+  ## NOTE: killed database=db_name from the user one. 
+  - postgresql_user: 
+      login_host={{ db_server }}
+      login_user={{ db_master_user }}
+      login_password={{ db_master_password }}
+      name={{ db_user }}
+      password={{ db_password }}
+      db={{ db_name }}
+      role_attr_flags=CREATEDB,CREATEROLE
+      no_password_changes=yes
+      state=present
+    register: userInfo
+    when: create_user == true and (power_user is defined and power_user == true)
+
+  - postgresql_user: 
+      login_host={{ db_server }}
+      login_user={{ db_master_user }}
+      login_password={{ db_master_password }}
+      name={{ db_user }}
+      password={{ db_password }}
+      db={{ db_name }}
+      role_attr_flags=CREATEDB
+      no_password_changes=yes
+      state=present
+    register: userInfo
+    when: create_user == true and (power_user is undefined or power_user == false)
+
+
+  - name: Show the user info
+    debug: var=userInfo
+
+  - postgresql_privs:
+      host={{ db_server }}
+      login={{ db_master_user }}
+      password={{ db_master_password }}
+      database={{ db_name }}
+      privs=SELECT,UPDATE,INSERT,DELETE
+      objs=ALL_IN_SCHEMA
+      role={{ db_user }}
+      type=table
+    register: table_privs
+
+  - debug: var=table_privs
+
+  - postgresql_privs:
+      host={{ db_server }}
+      login={{ db_master_user }}
+      password={{ db_master_password }}
+      database={{ db_name }}
+      privs=USAGE,SELECT,UPDATE
+      objs=ALL_IN_SCHEMA
+      role={{ db_user }}
+      type=sequence
+    register: sequence_privs
+
+  - debug: var=sequence_privs
+
