@@ -1,0 +1,15 @@
+mode:               "development"
+db_server:          "localhost"
+base_user:          "vagrant" # ubuntu or vagrant
+
+fqdn:               "qs.dev"
+app_name:           "qs_ds"
+app_db_name:        "qs_datasets"
+app_db_user:        "qs_admin"
+app_db_password:    "qs_admin"
+git_repo:           "git@github.com:the-training-partners/ttp-platform.git"
+git_branch:         "master"
+app_document_base:  "{{ apache_document_base }}/{{ app_name }}/public"
+# These are not used in dev mode
+db_master_user:     da_user
+db_master_password: default_da_password

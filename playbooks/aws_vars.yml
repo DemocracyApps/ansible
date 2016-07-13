@@ -1,13 +1,11 @@
-aws_owner_id:       "236492738853"
+aws_owner_id:       "424242424242"
 ttp_region:         "us-east-1"
 current_subnet:     "subnet-bb1c5090"  # Public Subnet 1
-web_key_pair:       "ttp_vpc_web"
-web_iam_role:       "ttp_vpc_web_role"
-web_security_group: "ttp_vpc_web_sg"
-rds_db_server:      "ttp-db-151129.csgsecmomz6x.us-east-1.rds.amazonaws.com" # URL of main RDS instance
-#rds_db_server:      "ttp-db-003.csgsecmomz6x.us-east-1.rds.amazonaws.com" # URL of main RDS instance
-db_master_user:     ttp_user
-db_master_password: ttp_password
+web_key_pair:       "da_vpc_web"
+web_iam_role:       "da_vpc_web_role"
+web_security_group: "da_vpc_web_sg"
+rds_db_server:      "xxxx.csgsecmomXXX.us-east-1.rds.amazonaws.com" # URL of main RDS instance
+db_master_user:     da_user
+db_master_password: da_password
 base_ami:           "ami-d05e75b8" # Latest Ubuntu 14.04 LTS AMI
 moodle_ami:         "ami-0583f06f" # Latest Moodle reference AMI
-
