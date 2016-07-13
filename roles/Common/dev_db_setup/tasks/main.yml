@@ -1,8 +1,11 @@
 ---
-  - postgresql_user: name={{ db_user }} password={{db_password}} role_attr_flags=CREATEDB,CREATEROLE,CREATEUSER
-    sudo: yes
-    sudo_user: postgres
+  # Note that postgresql_user for creating user is NOT idempotent. No idea why.
+  - postgresql_user: name={{ db_user }} state=present password={{db_password}} role_attr_flags=CREATEDB,CREATEROLE,CREATEUSER
+    become: yes
+    become_user: postgres
+    become_method: sudo
 
   - postgresql_db: name={{ db_name }} login_host={{ db_server }} login_user={{ db_user }} login_password={{ db_password }}
-    sudo: yes
-    sudo_user: postgres
+    become: yes
+    become_user: postgres
+    become_method: sudo
