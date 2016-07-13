@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: true
+  become_method: sudo
+
+  vars_files:
+    - ./common_vars.yml
+    - ./app_vars.yml
+
+  # IMPORTANT: postgres user creation is NOT idempotent. There's a work-around for production mode,
+  #            which allows you to recreate the database, but you must manually drop the user and
+  #            database if you want to re-run in development mode
+  roles:
+    # This is for development mode
+    - { role: Common/dev_db_setup, db_name: "{{app_db_name}}", db_user: "{{app_db_user}}", db_password: "{{app_db_password}}",
+              when: "mode == 'development'"}
+    # This is for production mode, when the database is set up externally
+    - { role: Common/create_db, db_recreate: false, db_name: "{{ app_db_name }}", when: "mode != 'development'"}
+    - { role: Common/create_db_user, db_user: "{{ app_db_user }}", db_name: "{{ app_db_name }}",
+        db_password: "{{ app_db_password }}",
+        when: "mode != 'development' and db_was_created is defined and db_was_created"
+        ## Use of db_was_created (set in create_db) is a work-around - postgresql_user fails if the user exists
+      }
