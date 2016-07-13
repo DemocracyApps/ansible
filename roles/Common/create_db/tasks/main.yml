@@ -20,4 +20,3 @@
 
   - name: Show whether db_was_created is true
     debug: var=db_was_created
-
