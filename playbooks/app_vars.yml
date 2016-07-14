@@ -2,8 +2,8 @@ mode:               "development"
 db_server:          "localhost"
 base_user:          "vagrant" # ubuntu or vagrant
 
+app_name:           "qs_ds" # this is also the name of the app directory: /var/www/{app_name}
 fqdn:               "qs.dev"
-app_name:           "qs_ds"
 app_db_name:        "qs_datasets"
 app_db_user:        "qs_admin"
 app_db_password:    "qs_admin"

@@ -1,9 +1,7 @@
 .idea
 .DS_Store
 .vagrant
-traxx
+qs_ds
 .composer
 html
 githubkey.pvt
-
-
